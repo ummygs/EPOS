@@ -169,6 +169,31 @@ class view
         return $hasil;
     }
 
+    public function penjualan_per_bulan()
+    {
+        $sql = "SELECT DATE_FORMAT(tanggal_input, '%M') as bulan, SUM(total) as total 
+                FROM nota 
+                GROUP BY DATE_FORMAT(tanggal_input, '%M'), MONTH(tanggal_input)
+                ORDER BY MONTH(tanggal_input)";
+        $row = $this->db->prepare($sql);
+        $row->execute();
+        return $row->fetchAll();
+    }
+
+    public function barang_stok_per_bulan() {
+        global $config;
+        $sql = "SELECT 
+                    MONTH(tgl_input) AS no_bulan,
+                    DATE_FORMAT(MIN(tgl_input), '%M') AS bulan,
+                    SUM(stok) AS total_stok
+                FROM barang
+                GROUP BY no_bulan
+                ORDER BY no_bulan";
+        $row = $config->prepare($sql);
+        $row->execute();
+        return $row->fetchAll();
+    }
+
     public function jual()
     {
         $sql ="SELECT nota.* , barang.id_barang, barang.nama_barang, barang.harga_beli, member.id_member,
